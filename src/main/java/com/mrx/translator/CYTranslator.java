@@ -9,6 +9,7 @@ import com.mrx.translator.utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,7 +70,8 @@ public class CYTranslator {
 
     private static CYToken getToken() {
         CYToken token = TOKEN_HOLDER.get();
-        if (token == null) {
+        // 没有 token 或者 token 过期都会刷新 token
+        if (token == null || token.getExpireTime().isBefore(LocalDateTime.now())) {
             synchronized (TOKEN_HOLDER) {
                 String response = HttpUtils.sendPost(TOKEN_API, CYTokenPayload.newPayload().toPayload(), CY_HEADERS);
                 CYToken newToken = JSON.parseObject(response, CYToken.class);

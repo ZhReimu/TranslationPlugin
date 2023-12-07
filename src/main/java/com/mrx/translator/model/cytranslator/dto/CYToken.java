@@ -7,6 +7,8 @@ import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 /**
  * @author Mr.X
@@ -15,12 +17,19 @@ import java.time.LocalDateTime;
 @Data
 public final class CYToken {
     private Integer rc;
-    @JSONField(name = "expire_time")
+    @JSONField(serialize = false, deserialize = false)
     private LocalDateTime expireTime;
     private String jwt;
 
     public Payload decodeJwt() {
         return JSON.parseObject(new String(Base64.decodeBase64(JWT.decode(jwt).getPayload())), Payload.class);
+    }
+
+    @SuppressWarnings("unused")
+    public void setExpire_time(Long expire_time) {
+        if (expire_time != null) {
+            expireTime = LocalDateTime.from(new Date(expire_time * 1000).toInstant().atOffset(ZoneOffset.ofHours(8)));
+        }
     }
 
     @Data
