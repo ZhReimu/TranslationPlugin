@@ -39,10 +39,14 @@ public class CYTranslator {
     private static final Logger logger = LoggerFactory.getLogger(CYTranslator.class);
 
     public static void main(String[] args) {
-        System.out.println(translate("Hello", "World"));
-        System.out.println(translate("Hello", "World"));
-        System.out.println(translate("Hello", "World"));
-        System.out.println(translate("Hello", "World"));
+        String s = "    /**\n" +
+                "     * Prints a String and then terminate the line.  This method behaves as\n" +
+                "     * though it invokes {@link #print(String)} and then\n" +
+                "     * {@link #println()}.\n" +
+                "     *\n" +
+                "     * @param x  The {@code String} to be printed.\n" +
+                "     */";
+        System.out.println(translate(s));
     }
 
     private static String translate(String... source) {
@@ -62,7 +66,7 @@ public class CYTranslator {
                 .detect(true)
                 .browser_id(jwt.getBrowser_id())
                 .build();
-        String response = HttpUtils.sendPost(TRANSLATOR_API, payload.toPayload(), TRANSLATE_TOKEN, token.getJwt());
+        String response = HttpUtils.sendPost(TRANSLATOR_API, payload.toPayload(), TRANSLATE_TOKEN, token.getJwt()).trim();
         logger.info("response: {}", response);
         CYResponse cyResponse = JSON.parseObject(response, CYResponse.class);
         return cyResponse.getTarget().stream().map(Decrypt::decrypt).collect(Collectors.joining());
@@ -73,7 +77,7 @@ public class CYTranslator {
         // 没有 token 或者 token 过期都会刷新 token
         if (token == null || token.getExpireTime().isBefore(LocalDateTime.now())) {
             synchronized (TOKEN_HOLDER) {
-                String response = HttpUtils.sendPost(TOKEN_API, CYTokenPayload.newPayload().toPayload(), CY_HEADERS);
+                String response = HttpUtils.sendPost(TOKEN_API, CYTokenPayload.newPayload().toPayload(), CY_HEADERS).trim();
                 CYToken newToken = JSON.parseObject(response, CYToken.class);
                 if (newToken.getRc() < 0) {
                     throw new RuntimeException("fetch token failed: " + response);
