@@ -1,6 +1,17 @@
 package com.mrx.translator;
 
+import com.alibaba.fastjson2.JSON;
+import com.mrx.translator.model.cytranslator.dto.CYToken;
+import com.mrx.translator.model.cytranslator.payload.CYTokenPayload;
+import com.mrx.translator.model.cytranslator.payload.CYTranslatePayload;
+import com.mrx.translator.model.cytranslator.response.CYResponse;
+import com.mrx.translator.utils.HttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 彩云小译
@@ -12,9 +23,64 @@ public class CYTranslator {
 
     private static final String example = "5Y2t5nJ95YvJ55JZ";
 
+    private static final String TRANSLATOR_API = "https://api.interpreter.caiyunai.com/v1/translator";
+
+    private static final String TOKEN_API = "https://api.interpreter.caiyunai.com/v1/user/jwt/generate";
+
+    private static final String[] CY_HEADERS = new String[]{
+            "X-Authorization", "token:qgemv4jr1y38jyq6vhvi", "origin", "https://fanyi.caiyunapp.com"
+    };
+
+    private static final String TRANSLATE_TOKEN = "T-Authorization";
+
+    private static final ThreadLocal<CYToken> TOKEN_HOLDER = new ThreadLocal<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(CYTranslator.class);
+
     public static void main(String[] args) {
-        String decrypted = Decrypt.decrypt(example);
-        System.out.println(decrypted);
+        System.out.println(translate("Hello", "World"));
+        System.out.println(translate("Hello", "World"));
+        System.out.println(translate("Hello", "World"));
+        System.out.println(translate("Hello", "World"));
+    }
+
+    private static String translate(String... source) {
+        CYToken token = getToken();
+        CYToken.Payload jwt = token.decodeJwt();
+        logger.info("jwt: {}", JSON.toJSONString(jwt));
+        CYTranslatePayload payload = CYTranslatePayload.builder()
+                .source(List.of(source))
+                .trans_type("auto2zh")
+                .request_id("web_fanyi")
+                .media("text")
+                .os_type("web")
+                .dict(true)
+                .cached(true)
+                .style("formal")
+                .model("")
+                .detect(true)
+                .browser_id(jwt.getBrowser_id())
+                .build();
+        String response = HttpUtils.sendPost(TRANSLATOR_API, payload.toPayload(), TRANSLATE_TOKEN, token.getJwt());
+        logger.info("response: {}", response);
+        CYResponse cyResponse = JSON.parseObject(response, CYResponse.class);
+        return cyResponse.getTarget().stream().map(Decrypt::decrypt).collect(Collectors.joining());
+    }
+
+    private static CYToken getToken() {
+        CYToken token = TOKEN_HOLDER.get();
+        if (token == null) {
+            synchronized (TOKEN_HOLDER) {
+                String response = HttpUtils.sendPost(TOKEN_API, CYTokenPayload.newPayload().toPayload(), CY_HEADERS);
+                CYToken newToken = JSON.parseObject(response, CYToken.class);
+                if (newToken.getRc() < 0) {
+                    throw new RuntimeException("fetch token failed: " + response);
+                }
+                logger.info("newToken: {}", response);
+                TOKEN_HOLDER.set(newToken);
+            }
+        }
+        return TOKEN_HOLDER.get();
     }
 
     /**

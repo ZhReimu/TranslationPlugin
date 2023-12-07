@@ -1,5 +1,8 @@
 package com.mrx.translator.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,12 +17,17 @@ public class HttpUtils {
     private static final HttpClient client = HttpClient.newBuilder()
             .build();
 
-    public static String sendPost(String url, String payload) {
+    private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
+
+    public static String sendPost(String url, String payload, String... headers) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .header("Content-Type", "application/json")
+                    .headers(headers)
                     .build();
+            logger.info("sending: {} -> {}", url, payload);
             return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
         } catch (Exception e) {
             throw new RuntimeException(e);
