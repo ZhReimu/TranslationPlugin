@@ -1,10 +1,12 @@
 package cn.yiiguxing.plugin.translate.trans.caiyun;
 
 import cn.yiiguxing.plugin.translate.trans.AbstractTranslator;
+import cn.yiiguxing.plugin.translate.trans.ErrorInfo;
 import cn.yiiguxing.plugin.translate.trans.Lang;
 import cn.yiiguxing.plugin.translate.trans.Translation;
 import cn.yiiguxing.plugin.translate.ui.settings.TranslationEngine;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.List;
@@ -72,4 +74,11 @@ public class CYTranslateEngine extends AbstractTranslator {
     public int getContentLengthLimit() {
         return TranslationEngine.CAI_YUN.getContentLengthLimit();
     }
+
+    @Nullable
+    @Override
+    protected ErrorInfo createErrorInfo(@NotNull Throwable throwable) {
+        return new ErrorInfo(throwable.getMessage());
+    }
+
 }

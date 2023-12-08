@@ -46,7 +46,7 @@ enum class TranslationEngine(
     ALI("translate.ali", message("translation.engine.ali.name"), TranslationIcons.Engines.Ali, 5000),
     DEEPL("translate.deepl", message("translation.engine.deepl.name"), TranslationIcons.Engines.Deepl, 131072, 1000),
     OPEN_AI("translate.openai", message("translation.engine.openai.name"), TranslationIcons.Engines.OpenAI, 2000, 1000),
-    CAI_YUN("fanyi.caiyun", message("translation.engine.caiyun.name"), TranslationIcons.Engines.CaiYun, 2000, 1000),
+    CAI_YUN("fanyi.caiyun", message("translation.engine.caiyun.name"), TranslationIcons.Engines.CaiYun, 20000, 1000),
     ;
 
     var primaryLanguage: Lang
