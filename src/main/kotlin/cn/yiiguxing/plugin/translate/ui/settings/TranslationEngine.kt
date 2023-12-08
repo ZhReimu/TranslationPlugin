@@ -7,6 +7,7 @@ import cn.yiiguxing.plugin.translate.trans.Lang
 import cn.yiiguxing.plugin.translate.trans.Translator
 import cn.yiiguxing.plugin.translate.trans.ali.AliTranslator
 import cn.yiiguxing.plugin.translate.trans.baidu.BaiduTranslator
+import cn.yiiguxing.plugin.translate.trans.caiyun.CYTranslateEngine
 import cn.yiiguxing.plugin.translate.trans.deepl.DeeplCredential
 import cn.yiiguxing.plugin.translate.trans.deepl.DeeplSettingsDialog
 import cn.yiiguxing.plugin.translate.trans.deepl.DeeplTranslator
@@ -44,7 +45,9 @@ enum class TranslationEngine(
     BAIDU("fanyi.baidu", message("translation.engine.baidu.name"), TranslationIcons.Engines.Baidu, 10000, 1000),
     ALI("translate.ali", message("translation.engine.ali.name"), TranslationIcons.Engines.Ali, 5000),
     DEEPL("translate.deepl", message("translation.engine.deepl.name"), TranslationIcons.Engines.Deepl, 131072, 1000),
-    OPEN_AI("translate.openai", message("translation.engine.openai.name"), TranslationIcons.Engines.OpenAI, 2000, 1000);
+    OPEN_AI("translate.openai", message("translation.engine.openai.name"), TranslationIcons.Engines.OpenAI, 2000, 1000),
+    CAI_YUN("fanyi.caiyun", message("translation.engine.caiyun.name"), TranslationIcons.Engines.CaiYun, 2000, 1000),
+    ;
 
     var primaryLanguage: Lang
         get() = Settings.primaryLanguage?.takeIf { it in supportedTargetLanguages() } ?: translator.defaultLangForLocale
@@ -66,6 +69,7 @@ enum class TranslationEngine(
                 ALI -> AliTranslator
                 DEEPL -> DeeplTranslator
                 OPEN_AI -> OpenAITranslator
+                CAI_YUN -> CYTranslateEngine.INSTANCE
             }
         }
 
@@ -79,7 +83,7 @@ enum class TranslationEngine(
 
     fun isConfigured(): Boolean {
         return when (this) {
-            MICROSOFT, GOOGLE -> true
+            MICROSOFT, GOOGLE, CAI_YUN -> true
             YOUDAO -> isConfigured(Settings.youdaoTranslateSettings)
             BAIDU -> isConfigured(Settings.baiduTranslateSettings)
             ALI -> isConfigured(Settings.aliTranslateSettings)

@@ -25,6 +25,12 @@ data class Translation(
     val dictDocument: TranslationDocument? = null,
     val extraDocuments: List<NamedTranslationDocument> = emptyList()
 ) : BaseTranslation(original, srcLang, targetLang, translation) {
+    constructor(
+        text: String,
+        translated: String,
+        srcLang: Lang,
+        targetLang: Lang
+    ) : this(text,translated,srcLang,targetLang, emptyList())
 
     val sourceLanguages: List<Lang> by lazy { sourceLangs.filter { it != Lang.UNKNOWN } }
 

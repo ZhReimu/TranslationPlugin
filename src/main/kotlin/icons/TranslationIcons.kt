@@ -90,6 +90,9 @@ object TranslationIcons {
 
         @JvmField
         val Youdao: Icon = load("/icons/engines/youdao.svg")
+
+        @JvmField
+        val CaiYun: Icon = load("/icons/engines/youdao.svg")
     }
 
 

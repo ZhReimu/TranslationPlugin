@@ -67,6 +67,8 @@ dependencies {
     implementation(libs.dbutils)
     implementation(libs.ideaCompat)
     implementation(libs.mp3spi) { exclude("junit") }
+    implementation("com.alibaba.fastjson2:fastjson2:2.0.43")
+    implementation("com.auth0:java-jwt:4.4.0")
     testImplementation(libs.junit)
 }
 
