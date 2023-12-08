@@ -15,7 +15,7 @@ import java.util.List;
  **/
 public class CYTranslateEngine extends AbstractTranslator {
 
-    public static CYTranslateEngine INSTANCE = new CYTranslateEngine();
+    public static final CYTranslateEngine INSTANCE = new CYTranslateEngine();
 
     private CYTranslateEngine() {}
 
@@ -60,7 +60,7 @@ public class CYTranslateEngine extends AbstractTranslator {
     @NotNull
     @Override
     public List<Lang> getSupportedTargetLanguages() {
-        return TranslationEngine.CAI_YUN.supportedTargetLanguages();
+        return List.of(Lang.values());
     }
 
     @Override
