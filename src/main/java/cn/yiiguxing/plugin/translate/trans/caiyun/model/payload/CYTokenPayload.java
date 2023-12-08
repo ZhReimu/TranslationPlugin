@@ -12,7 +12,11 @@ import java.util.UUID;
 public final class CYTokenPayload extends BasePayload {
     private final String browser_id = DigestUtils.md5Hex(UUID.randomUUID().toString().replace("-", ""));
 
-    public static CYTranslatePayload newPayload() {
-        return new CYTranslatePayload();
+    public String getBrowser_id() {
+        return browser_id;
+    }
+
+    public static CYTokenPayload newPayload() {
+        return new CYTokenPayload();
     }
 }
